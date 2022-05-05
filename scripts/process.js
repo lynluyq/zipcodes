@@ -54,9 +54,8 @@ data.forEach(function(line, num) {
         o.city = ucfirst(clean(line[3]));
         o.state = clean(line[4]);
         o.country = 'US';
-        if (!zips[o.zip]) {
-            zips[o.zip] = o;
-        }
+        zips[o.zip] = zips[o.zip] || [];
+        zips[o.zip].push(o)
     }
 });
 
@@ -65,14 +64,14 @@ geonamesData.forEach(function(line, num) {
     if (dt.length == 12) {
         var zip = clean(dt[1]);
         if (!zips[zip] && dt[4]) {
-            zips[zip] = {
+            zips[zip] = [{
                 zip: zip,
                 latitude: Number(clean(dt[9])),
                 longitude: Number(clean(dt[10])),
                 city: ucfirst(clean(dt[2])),
                 state: clean(dt[4]),
                 country: 'US'
-            };
+            }];
         }
     }
 });
@@ -82,9 +81,9 @@ var stateMap = {};
 
 for (var i in zips) {
     var item = zips[i];
-    stateMap[item.state] = stateMap[item.state] || [];
+    stateMap[item[0].state] = stateMap[item[0].state] || [];
 
-    stateMap[item.state].push(item.zip);
+    stateMap[item[0].state].push(item[0].zip);
 }
 
 str = 'exports.codes = ' + JSON.stringify(zips) + ';\n';
